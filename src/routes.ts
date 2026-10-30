@@ -1,5 +1,6 @@
 import express from "express";
 import * as UserController from "@controllers/UserController";
+import * as PlantController from "@controllers/PlantController"
 
 const routes = express.Router();
 
@@ -13,5 +14,8 @@ routes.get("/users", UserController.readAllUsers);
 routes.get("/users/:id", UserController.readUserById);
 routes.patch("/users/:id", UserController.updateUser);
 routes.delete("/users/:id", UserController.deleteUser);
+
+// CRUD de plantas
+routes.post("/plantas",PlantController.createPlanta);
 
 export default routes;
