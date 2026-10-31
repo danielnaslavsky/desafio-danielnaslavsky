@@ -10,10 +10,18 @@ export const createPlanta = async (data: Prisma.PlantaCreateInput) => {
 export interface FiltrosPlanta {
     luminosidade?: Luminosidade;
     petFriendly?: boolean;
+    nome?: string;
 }
 
 export const findAllPlantas = async (filtros: FiltrosPlanta = {}) => {
-    return await prisma.planta.findMany({where: filtros});
+    const { nome, luminosidade, petFriendly } = filtros;
+    return await prisma.planta.findMany({
+        where:  {
+        luminosidade: luminosidade,
+        petFriendly: petFriendly, 
+        nome: nome !== undefined ? { contains: nome, mode: "insensitive" } : undefined
+        },
+    });
 };
     
 export const findPlantaById = async (id: number) => {

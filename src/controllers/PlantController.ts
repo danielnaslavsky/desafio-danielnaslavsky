@@ -88,11 +88,12 @@ export const createPlanta = async (req: Request, res: Response) => {
 
 export const findAllPlantas = async (req: Request, res: Response) => {
   try {
-    const { luminosidade, petFriendly } = req.query;
+    const { luminosidade, petFriendly, nome } = req.query;
     //Adaptação para utilizar validarPlanta
     //converte "true"/"false" para boolean; qualquer outro valor segue como veio
     const filtros = {
       luminosidade,
+      nome,
       petFriendly:
       petFriendly === "true" ? true : petFriendly === "false" ? false : petFriendly,
     };
