@@ -15,7 +15,7 @@ routes.get("/users/:id", UserController.readUserById);
 routes.patch("/users/:id", UserController.updateUser);
 routes.delete("/users/:id", UserController.deleteUser);
 
-// CRUD de plantas
+
 routes.post("/plantas", PlantController.createPlanta);
 routes.get("/plantas", PlantController.findAllPlantas);
 routes.get("/plantas/esgotadas", PlantController.findPlantasEsgotadas);

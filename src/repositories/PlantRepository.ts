@@ -6,7 +6,7 @@ export const createPlanta = async (data: Prisma.PlantaCreateInput) => {
         data: data
     });
 };
-//Interface necessária para ação de listar com filtros
+
 export interface FiltrosPlanta {
     luminosidade?: Luminosidade;
     petFriendly?: boolean;
@@ -46,10 +46,7 @@ export const deletePlanta = async (id: number) => {
     });
 };
 
-//Adicionei as rotas 6 e 7 extras que não estavam no User.
 
-// Venda: verifica e diminui numa única operação no banco.
-// Retorna quantas linhas foram alteradas (0 = estoque insuficiente).
 export const sellPlanta = async (id: number,quantidade : number) => {
     const resultado = await prisma.planta.updateMany({
         where: { id, estoque: { gte: quantidade } },
@@ -58,7 +55,7 @@ export const sellPlanta = async (id: number,quantidade : number) => {
     return resultado.count;
 };
 
-// Valor total do estoque
+
 export const getValorTotalEstoque = async () => {
     const plantas = await prisma.planta.findMany({
         select: { preco: true, estoque: true },
