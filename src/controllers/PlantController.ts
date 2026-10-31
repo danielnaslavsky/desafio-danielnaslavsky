@@ -88,7 +88,7 @@ export const createPlanta = async (req: Request, res: Response) => {
 
 export const findAllPlantas = async (req: Request, res: Response) => {
   try {
-    const { luminosidade, petFriendly, nome } = req.query;
+    const { luminosidade, petFriendly, nome, ordem } = req.query;
     //Adaptação para utilizar validarPlanta
     //converte "true"/"false" para boolean; qualquer outro valor segue como veio
     const filtros = {
@@ -102,8 +102,17 @@ export const findAllPlantas = async (req: Request, res: Response) => {
     if (erro) {
         return res.status(400).json({ message: erro });
     }
+
+    if (ordem !== undefined && ordem !== "preco" && ordem !== "nome") {
+        return res.status(400).json({ message: "ordem deve ser preco ou nome" });
+    }
+
     // 200 OK: algo foi atualizado
-    const plantas = await PlantRepository.findAllPlantas(filtros as PlantRepository.FiltrosPlanta);
+    const plantas = await PlantRepository.findAllPlantas(
+        filtros as PlantRepository.FiltrosPlanta, 
+        ordem as PlantRepository.OrdemPlanta | undefined,
+    );
+
     return res.status(200).json(plantas);
 
   } catch (error) {

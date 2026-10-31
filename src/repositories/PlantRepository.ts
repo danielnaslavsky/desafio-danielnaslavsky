@@ -13,14 +13,17 @@ export interface FiltrosPlanta {
     nome?: string;
 }
 
-export const findAllPlantas = async (filtros: FiltrosPlanta = {}) => {
+export type OrdemPlanta = "preco" | "nome";
+
+export const findAllPlantas = async (filtros: FiltrosPlanta = {}, ordem?: OrdemPlanta) => {
     const { nome, luminosidade, petFriendly } = filtros;
     return await prisma.planta.findMany({
         where:  {
-        luminosidade: luminosidade,
-        petFriendly: petFriendly, 
+        luminosidade,
+        petFriendly, 
         nome: nome !== undefined ? { contains: nome, mode: "insensitive" } : undefined
         },
+        orderBy: ordem !== undefined ? { [ordem]: "asc" } : undefined,
     });
 };
     
