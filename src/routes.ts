@@ -17,5 +17,6 @@ routes.delete("/users/:id", UserController.deleteUser);
 
 // CRUD de plantas
 routes.post("/plantas",PlantController.createPlanta);
-
+routes.get("/plantas", PlantController.findAllPlantas);
+routes.get("/plantas/:id", PlantController.findPlantaById);
 export default routes;

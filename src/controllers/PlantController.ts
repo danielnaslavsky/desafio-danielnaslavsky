@@ -81,3 +81,53 @@ export const createPlanta = async (req: Request, res: Response) => {
   }
 };
 
+
+export const findAllPlantas = async (req: Request, res: Response) => {
+  try {
+    const { luminosidade, petFriendly } = req.query;
+    //Adaptação para utilizar validarPlanta
+    //converte "true"/"false" para boolean; qualquer outro valor segue como veio
+    const filtros = {
+      luminosidade,
+      petFriendly:
+        petFriendly === "true" ? true : petFriendly === "false" ? false : petFriendly,
+    };
+
+    const erro = validarPlanta(filtros,false);
+    if (erro) {
+        return res.status(400).json({ message: erro });
+    }
+    // 200 OK: algo foi atualizado
+    const plantas = await PlantRepository.findAllPlantas(filtros as PlantRepository.FiltrosPlanta);
+    return res.status(200).json(plantas);
+
+  } catch (error) {
+    console.error(error);
+    // 500 Internal Server Error: o problema foi nosso, não do cliente
+    return res.status(500).json({ message: "Erro ao listar plantas." });
+  }
+};
+
+
+export const findPlantaById = async (req: Request, res: Response) => {
+    try {   
+        const id = Number(req.params.id);
+        // 400 Bad Request: o id não é número inteiro positivo
+        if (!Number.isInteger(id) || id <= 0) {
+            return res.status(400).json({ message: "O ID fornecido é inválido. Deve ser um número inteiro positivo." });
+        }
+        const planta = await PlantRepository.findPlantaById(id);
+        if (!planta) {
+            // 404 Not Found: o id é válido, mas a planta não existe
+            return res.status(404).json({ message: "Planta não encontrada." });
+        }
+        // 200 OK: planta encontrada
+        return res.status(200).json(planta);
+          
+    } catch (error) {
+        console.error(error);
+        // 500 Internal Server Error: o problema foi nosso, não do cliente
+        return res.status(500).json({ message: "Erro ao buscar planta." });
+    }
+};
+
