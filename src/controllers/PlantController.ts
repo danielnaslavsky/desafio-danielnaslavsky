@@ -47,6 +47,10 @@ const validarPlanta = (body: any, cadastro: boolean): string | null => {
     return null;
 };
 
+const idValido = (valor: string): number | null => {
+    const id = Number(valor);
+    return Number.isInteger(id) && id > 0 ? id : null;
+};
 
 //É a rota do criar Planta inspirada no criar User, com o mesmo esqueleto, mas agora chamando a função validarPlanta para os diferentes erros.
 export const createPlanta = async (req: Request, res: Response) => {
@@ -90,7 +94,7 @@ export const findAllPlantas = async (req: Request, res: Response) => {
     const filtros = {
       luminosidade,
       petFriendly:
-        petFriendly === "true" ? true : petFriendly === "false" ? false : petFriendly,
+      petFriendly === "true" ? true : petFriendly === "false" ? false : petFriendly,
     };
 
     const erro = validarPlanta(filtros,false);
@@ -111,9 +115,9 @@ export const findAllPlantas = async (req: Request, res: Response) => {
 
 export const findPlantaById = async (req: Request, res: Response) => {
     try {   
-        const id = Number(req.params.id);
+        const id = idValido(req.params.id);
         // 400 Bad Request: o id não é número inteiro positivo
-        if (!Number.isInteger(id) || id <= 0) {
+        if (id === null) {
             return res.status(400).json({ message: "O ID fornecido é inválido. Deve ser um número inteiro positivo." });
         }
         const planta = await PlantRepository.findPlantaById(id);
@@ -128,6 +132,64 @@ export const findPlantaById = async (req: Request, res: Response) => {
         console.error(error);
         // 500 Internal Server Error: o problema foi nosso, não do cliente
         return res.status(500).json({ message: "Erro ao buscar planta." });
+    }
+};
+
+export const updatePlanta = async (req: Request, res: Response) => {
+    try {
+        const id = idValido(req.params.id);
+        //Verifica se o id é válido
+        if (id === null) {
+            return res.status(400).json({ message: "O ID fornecido é inválido. Deve ser um número inteiro positivo." });
+        }
+        const { nome, especie, preco, estoque, luminosidade, petFriendly, regaACadaDias } = req.body;
+        // Antes de editar, garantimos que o usuário existe
+        const planta = await PlantRepository.findPlantaById(id);
+        
+        if (!planta) {
+            return res.status(404).json({ message: "Planta não encontrada." });
+        }
+
+         // PATCH = atualização parcial: campos não enviados (undefined) não são alterados
+        const updatedPlanta = await PlantRepository.updatePlanta(id, {
+            nome: nome,
+            especie: especie,
+            preco: preco,
+            estoque: estoque,
+            luminosidade: luminosidade,
+            petFriendly: petFriendly,
+            regaACadaDias: regaACadaDias
+        });
+
+        return res.status(200).json(updatedPlanta);
+    } catch (error) {
+        console.error(error);
+        // 500 Internal Server Error: o problema foi nosso, não do cliente
+        return res.status(500).json({ message: "Erro ao atualizar planta." });
+    }
+};
+
+
+
+export const deletePlanta = async (req: Request, res: Response) => {
+    try {
+        const id = idValido(req.params.id);
+        // 400 Bad Request: o id não é número inteiro positivo
+        if (id === null) {
+            return res.status(400).json({ message: "O ID fornecido é inválido. Deve ser um número inteiro positivo." });
+        }
+        const planta = await PlantRepository.findPlantaById(id);
+        if (!planta) {
+            // 404 Not Found: o id é válido, mas a planta não existe
+            return res.status(404).json({ message: "Planta não encontrada." });
+        }
+        await PlantRepository.deletePlanta(id);
+        // 204 No content: deu certo e não há nada para devolver
+        return res.status(204).send();
+    } catch (error) {
+        console.error(error);
+        // 500 Internal Server Error: o problema foi nosso, não do cliente
+        return res.status(500).json({ message: "Erro ao remover planta." });
     }
 };
 

@@ -7,7 +7,6 @@ export const createPlanta = async (data: Prisma.PlantaCreateInput) => {
         data: data
     });
 };
-
 //Interface necessária para ação de listar com filtros
 export interface FiltrosPlanta {
     luminosidade?: Luminosidade;
