@@ -193,3 +193,47 @@ export const deletePlanta = async (req: Request, res: Response) => {
     }
 };
 
+export const sellPlanta = async (req: Request, res: Response) => {
+    try {
+        const id = idValido(req.params.id);
+        // 400 Bad Request: o id não é número inteiro positivo
+        if (id === null) {
+            return res.status(400).json({ message: "O ID fornecido é inválido. Deve ser um número inteiro positivo." });
+        }
+        
+        const planta = await PlantRepository.findPlantaById(id);
+        if (!planta) {
+            // 404 Not Found: o id é válido, mas a planta não existe
+            return res.status(404).json({ message: "Planta não encontrada." });
+        }
+        const quantidade = req.body?.quantidade;
+        const alteradas = await PlantRepository.sellPlanta(id, quantidade);
+
+        // 400 Bad Request: estoque insuficiente (nada foi alterado)
+        if (alteradas === 0) {
+            return res.status(400).json({ message: "Estoque insuficiente. Temos só ${planta.estoque} vasos." });
+        }
+
+        const atualizada = await PlantRepository.findPlantaById(id);
+
+        // 200 OK: venda registrada, devolve a planta com o estoque novo
+        return res.status(200).json(atualizada);
+    } catch(error) {
+        console.error(error);
+        // 500 Internal Server Error: o problema foi nosso, não do cliente
+        return res.status(500).json({ message: "Erro ao vender planta." });
+    }
+}
+
+export const getValorTotalEstoque = async (req: Request, res: Response) => {
+    try {
+        const total = await PlantRepository.getValorTotalEstoque();
+        
+        // 200 OK: devolve { valorTotalEmCentavos, totalDeVasos }
+        return res.status(200).json(total);
+    } catch(error) {
+        console.error(error);
+        // 500 Internal Server Error: o problema foi nosso, não do cliente
+        return res.status(500).json({ message: "Erro ao vender planta." });
+    }
+}

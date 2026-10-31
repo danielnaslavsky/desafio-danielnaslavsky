@@ -1,5 +1,4 @@
-import { Prisma } from "@prisma/client";
-import { Luminosidade } from "@prisma/client";
+import { Prisma, Luminosidade } from "@prisma/client";
 import prisma from "@database";
 
 export const createPlanta = async (data: Prisma.PlantaCreateInput) => {

@@ -16,9 +16,11 @@ routes.patch("/users/:id", UserController.updateUser);
 routes.delete("/users/:id", UserController.deleteUser);
 
 // CRUD de plantas
-routes.post("/plantas",PlantController.createPlanta);
+routes.post("/plantas", PlantController.createPlanta);
 routes.get("/plantas", PlantController.findAllPlantas);
 routes.get("/plantas/:id", PlantController.findPlantaById);
 routes.delete("/plantas/:id", PlantController.deletePlanta);
-routes.patch("/plantes/:id", PlantController.updatePlanta);
+routes.patch("/plantas/:id", PlantController.updatePlanta);
+routes.post("/plantas/:id/venda", PlantController.sellPlanta);
+routes.get("/plantas/estoque/valor-total", PlantController.getValorTotalEstoque);
 export default routes;
