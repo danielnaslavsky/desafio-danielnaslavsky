@@ -211,7 +211,7 @@ export const sellPlanta = async (req: Request, res: Response) => {
         if (!Number.isInteger(quantidade) || quantidade <= 0) {
             return res.status(400).json({ message: "Quantidade deve ser um inteiro maior que zero." });
         }
-        
+
         const planta = await PlantRepository.findPlantaById(id);
         if (!planta) {
             // 404 Not Found: o id é válido, mas a planta não existe
@@ -245,6 +245,18 @@ export const getValorTotalEstoque = async (req: Request, res: Response) => {
     } catch(error) {
         console.error(error);
         // 500 Internal Server Error: o problema foi nosso, não do cliente
-        return res.status(500).json({ message: "Erro ao vender planta." });
+        return res.status(500).json({ message: "Erro ao somar valor total de estoque." });
+    }
+};
+
+export const findPlantasEsgotadas = async (req: Request, res: Response) => {
+    try {
+        const plantas = await PlantRepository.findPlantasEsgotadas();
+        // 200 OK: lista de plantas com estoque zero (pode ser vazia)
+        return res.status(200).json(plantas);
+    } catch (error) {
+        console.error(error);
+        // 500 Internal Server Error: o problema foi nosso, não do cliente
+        return res.status(500).json({ message: "Erro ao listar plantas esgotadas." });
     }
 };
